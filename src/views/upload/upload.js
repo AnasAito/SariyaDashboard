@@ -17,62 +17,28 @@ const config = {
   measurementId: "G-DDPFK2MH90"
 };
 
-const createQuestion = gql`
-  mutation createQuestion($questionText: String!, $taskid: ID!) {
-    createQuestion(
-      data: { questionText: $questionText, task: { connect: { id: $taskid } } }
-    ) {
-      id
-      questionText
-    }
-  }
-`;
-const createOption = gql`
-  mutation createOption($optionText: String!, $questionid: ID!) {
-    createOption(
-      data: {
-        optionText: $optionText
-        question: { connect: { id: $questionid } }
-      }
-    ) {
-      id
-    }
-  }
-`;
-const createOptionCr = gql`
-  mutation createOption(
-    $optionText: String!
-    $questionText: String!
-    $taskid: ID!
-  ) {
-    createOption(
-      data: {
-        optionText: $optionText
-        question: {
-          create: {
-            questionText: $questionText
-            task: { connect: { id: $taskid } }
-          }
-        }
-      }
-    ) {
-      question {
-        id
-      }
-    }
-  }
-`;
 firebase.initializeApp(config);
 
+const ADD_Images = gql`
+  mutation AddImages($id: ID!, $images: [String!]!) {
+    updateProduct(where: { id: $id }, data: { images: { set: $images } }) {
+      id
+    }
+  }
+`;
 class Upload extends Component {
   state = {
     image: "",
     imageURL: "",
     progress: 0,
     imagelist: [],
-    step: 1
+    step: 1,
+    id: ""
   };
-
+  componentDidMount = async () => {
+    let id = await localStorage.getItem("ProductID");
+    this.setState({ id: id });
+  };
   handleUploadStartagain = () => {
     this.setState({
       image: "",
@@ -95,97 +61,54 @@ class Upload extends Component {
       <div>
         <div>
           <Typography variant="button" display="block" gutterBottom>
-            part : {this.state.step}
+            Use Upload image to add product images ,when finished click submit !
           </Typography>
         </div>
-        <Mutation
-          mutation={
-            this.state.imagelist.length == 0 ? createOptionCr : createOption
-          }
-        >
-          {(croption, { data }) => (
-            <div style={{ marginTop: 15 }}>
-              {this.state.imagelist.length < 4 && (
-                <label
-                  onClick={() => {}}
-                  style={{
-                    backgroundColor: "#9c27b0",
-                    color: "white",
-                    padding: 10,
-                    borderRadius: 4,
-                    cursor: "pointer"
-                  }}
-                >
-                  Upload logo {this.state.imagelist.length + 1}
-                  <FileUploader
-                    hidden
-                    accept="image/*"
-                    name="image"
-                    storageRef={firebase.storage().ref("import")}
-                    onUploadStart={this.handleUploadStart}
-                    onUploadSuccess={filename => {
-                      this.setState({
-                        image: filename,
-                        progress: 100
-                      });
+
+        <div style={{ marginTop: 15 }}>
+          {this.state.imagelist.length < 4 && (
+            <label
+              onClick={() => {}}
+              style={{
+                backgroundColor: "#9c27b0",
+                color: "white",
+                padding: 10,
+                borderRadius: 4,
+                cursor: "pointer"
+              }}
+            >
+              Upload Image ({this.state.imagelist.length + 1})
+              <FileUploader
+                hidden
+                accept="image/*"
+                name="image"
+                storageRef={firebase.storage().ref("import")}
+                onUploadStart={this.handleUploadStart}
+                onUploadSuccess={filename => {
+                  this.setState({
+                    image: filename,
+                    progress: 100
+                  });
+                  this.setState(prevState => ({
+                    image: filename,
+                    progress: 100
+                  }));
+                  firebase
+                    .storage()
+                    .ref("import")
+                    .child(filename)
+                    .getDownloadURL()
+                    .then(url => {
                       this.setState(prevState => ({
-                        image: filename,
-                        progress: 100
+                        imageURL: url,
+                        imagelist: [...prevState.imagelist, url]
                       }));
-                      firebase
-                        .storage()
-                        .ref("import")
-                        .child(filename)
-                        .getDownloadURL()
-                        .then(url => {
-                          if (this.state.imagelist.length == 0) {
-                            croption({
-                              variables: {
-                                questionText: "choose a logo ",
-                                taskid: localStorage.getItem("taskID"),
-                                optionText: url
-                              }
-                            }).then(({ data }) => {
-                              console.log(data.createOption);
-                              localStorage.setItem(
-                                "questionID",
-                                data.createOption.question.id
-                              );
-                            });
-                            // mutate
-                            //localStorage.setItem(data.questionText,data.id)
-                          } else {
-                            // console.log(localStorage.getItem(question));
-                            console.log("next logo");
-                            croption({
-                              variables: {
-                                questionid: localStorage.getItem("questionID"),
-                                optionText: url
-                              }
-                            }).then(({ data }) => {
-                              console.log(data);
-                            });
-                            // console.log(mutation);
-                          }
-                          this.setState(prevState => ({
-                            imageURL: url,
-                            imagelist: [...prevState.imagelist, url]
-                          }));
-                        });
-                      //
-                      //console.log(croption);
-                    }}
-                  />
-                </label>
-              )}
-              {this.state.imagelist.length > 3 && (
-                <Button variant="contained" color="gray" disabled>
-                  4 logos max
-                </Button>
-              )}
-            </div>
+                    });
+                }}
+              />
+            </label>
           )}
-        </Mutation>
+        </div>
 
         <div style={{ marginTop: 40 }}>
           <LinearProgress
@@ -202,17 +125,29 @@ class Upload extends Component {
             backgroundColor: "#9c27b0",
             color: "white"
           }}
-        >
-          {this.state.imagelist.length > 1 && (
-            <Button
-              style={{ backgroundColor: "#9c27b0", color: "white" }}
-              variant="contained"
-              onClick={this.handleUploadStartagain}
-            >
-              Next
-            </Button>
-          )}
-        </div>
+        ></div>
+        {this.state.progress == 100 ? (
+          <Mutation mutation={ADD_Images}>
+            {(mutation, { data }) => (
+              <Button
+                style={{ backgroundColor: "#9c27b0", color: "white" }}
+                variant="contained"
+                onClick={() =>
+                  mutation({
+                    variables: {
+                      id: this.state.id,
+                      images: this.state.imagelist
+                    }
+                  })
+                }
+              >
+                submit
+              </Button>
+            )}
+          </Mutation>
+        ) : (
+          <></>
+        )}
       </div>
     );
   }

@@ -1,6 +1,4 @@
 import React, { useEffect } from "react";
-// @material-ui/core components
-import { makeStyles } from "@material-ui/core/styles";
 
 // core components
 import GridItem from "components/Grid/GridItem";
@@ -58,7 +56,7 @@ export default function TableList() {
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
         <CustomTabs
-          title="Create Task :"
+          title="Create Product :"
           headerColor="primary"
           tabs={[
             {
@@ -67,18 +65,18 @@ export default function TableList() {
               tabContent: <Basic />
             },
             {
-              tabName: "Add content ",
+              tabName: "Add Images ",
               tabIcon: AddBox,
               tabContent: <Add />
             },
             {
-              tabName: "Submit",
+              tabName: "Submit to Store",
               tabIcon: Send,
               tabContent: (
                 <div>
                   <h4>
-                    by submiting this task , it will be added to all signed
-                    users's feed !
+                    by submiting this Product , it will be added to all signed
+                    users's store !
                   </h4>
                   <Button color="primary" round>
                     Submit

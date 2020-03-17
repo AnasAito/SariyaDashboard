@@ -24,23 +24,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const create_Task = gql`
-  mutation createTask(
+const create_Product = gql`
+  mutation createProduct(
     $name: String!
-    $type: String!
-    $taskScore: Int!
-    $desc: String
+    $description: String!
+    $price: Float!
   ) {
-    createTask(
-      data: {
-        name: $name
-        taskScore: $taskScore
-        type: $type
-        description: $desc
-      }
+    createProduct(
+      data: { name: $name, description: $description, price: $price }
     ) {
       id
-      type
     }
   }
 `;
@@ -63,28 +56,15 @@ const Basic = () => {
       setTC(false);
     }, 6000);
   };
-  const [createTask, { data }] = useMutation(create_Task);
+  const [createTask, { data }] = useMutation(create_Product);
   const classes = useStyles();
-  const type = ({ field, form, ...props }) => {
-    return (
-      <TextField
-        required
-        id="standard-required"
-        label="TYPE"
-        // defaultValue="Task type "
-        className={classes.textField}
-        margin="normal"
-        {...field}
-        {...props}
-      />
-    );
-  };
+
   const name = ({ field, form, ...props }) => {
     return (
       <TextField
         required
         id="standard-required"
-        label="Name"
+        label="Product Name"
         //defaultValue="Task name"
         className={classes.textField}
         margin="normal"
@@ -98,7 +78,7 @@ const Basic = () => {
       <TextField
         required
         id="standard-required"
-        label="Score"
+        label="Price"
         //defaultValue="Task score "
         className={classes.textField}
         margin="normal"
@@ -115,7 +95,6 @@ const Basic = () => {
         id="standard-required"
         label="Description"
         rows="4"
-        //defaultValue="Task description"
         className={classes.textField}
         margin="normal"
         {...field}
@@ -128,25 +107,22 @@ const Basic = () => {
       <Formik
         initialValues={{ taskname: "", type: "", score: "", desc: "" }}
         onSubmit={values => {
-          // console.log(values);
-          let { taskname, type, score, desc } = values;
+          let { taskname, score, desc } = values;
           createTask({
             variables: {
               name: taskname,
-              type: type,
-              taskScore: parseInt(score),
-              desc: desc
+              price: parseFloat(score),
+              description: desc
             }
           })
             .then(({ data }) => {
               //console.log(data.createTask.id);
-              localStorage.setItem("taskID", data.createTask.id);
-              localStorage.setItem("type", data.createTask.type);
+              localStorage.setItem("ProductID", data.createProduct.id);
+
               setnotype("success");
               showNotification();
             })
             .catch(function(e) {
-              console.log(values);
               console.log(e.message);
               setnotype("danger");
 
@@ -165,17 +141,15 @@ const Basic = () => {
                 <Grid item xs={4}>
                   <Field name="score" component={score} />
                 </Grid>
-                <Grid item xs={4}>
-                  <Field name="type" component={type} />
-                </Grid>
-                <Grid item xs={10}>
+
+                <Grid item xs={12}>
                   <Field name="desc" component={desc} />
                 </Grid>
 
                 <Grid item xs={12}>
                   <Button color="primary" type="submit" disabled={isSubmitting}>
                     {" "}
-                    Create Task
+                    Create Product
                   </Button>
                   <Snackbar
                     place="tc"
@@ -183,8 +157,8 @@ const Basic = () => {
                     icon={notype === "success" ? Done : ErrorOutline}
                     message={
                       notype === "success"
-                        ? "task created succesfuly"
-                        : "task creation failed"
+                        ? "product created succesfuly"
+                        : "product creation failed"
                     }
                     open={tc}
                     closeNotification={() => {
