@@ -116,8 +116,6 @@ class TasksTable extends React.Component {
   }
   exportdata(data) {
     let [columns, rows] = this.prepareData(data);
-    console.log(columns);
-    console.log(rows);
 
     let csv = [];
     csv.push(columns);
@@ -130,39 +128,10 @@ class TasksTable extends React.Component {
       data: this.props.data.map((prop, key) => {
         return {
           id: key,
-          taskName: prop[1],
-          taskScore: parseInt(prop[2]),
-          createdAt: prop[3],
-          myTasks: parseInt(prop[4]),
-          actions: (
-            // we've added some custom button actions
-            <div className="actions-right">
-              {/* use this button to add a like kind of action */}
-              <Button
-                justIcon
-                round
-                simple
-                color="info"
-                className="like"
-                // onClick={() => console.log(prop)}
-              >
-                <PublishIcon />
-              </Button>
-              {/* use this button to add a edit kind of action */}
-              <Button
-                justIcon
-                round
-                simple
-                color="warning"
-                className="edit"
-                onClick={() =>
-                  this.setState({ task: prop[1], classicModal: true })
-                }
-              >
-                <TocIcon />
-              </Button>{" "}
-            </div>
-          )
+          userPhone: prop[2],
+          userName: prop[1],
+          products: parseInt(prop[3]),
+          time: prop[4]
         };
       })
     });
@@ -187,28 +156,20 @@ class TasksTable extends React.Component {
                   filterable
                   columns={[
                     {
-                      Header: "Task Name",
-                      accessor: "taskName"
+                      Header: "User Phone",
+                      accessor: "userPhone"
                     },
                     {
-                      Header: "Task Score",
-                      accessor: "taskScore"
+                      Header: "User Name",
+                      accessor: "userName"
                     },
                     {
-                      Header: "created At",
-                      accessor: "createdAt",
-                      sortable: false,
-                      filterable: false
+                      Header: "Items count",
+                      accessor: "products"
                     },
                     {
-                      Header: "My tasks count",
-                      accessor: "myTasks"
-                    },
-                    {
-                      Header: "Actions",
-                      accessor: "actions",
-                      sortable: false,
-                      filterable: false
+                      Header: "Time",
+                      accessor: "time"
                     }
                   ]}
                   defaultPageSize={5}

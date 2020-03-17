@@ -29,7 +29,7 @@ import "assets/scss/material-dashboard-pro-react.scss?v=1.7.0";
 import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "@apollo/react-hooks";
 const client = new ApolloClient({
-  uri: "https://backtest.anasaitaomar1999.now.sh/"
+  uri: "https://backend.anasaitaomar1999.now.sh/"
 });
 const hist = createBrowserHistory();
 
