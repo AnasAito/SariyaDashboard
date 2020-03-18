@@ -3,8 +3,8 @@ import TableList from "views/TableList/TableList.js";
 
 var dashRoutes = [
   {
-    path: "/tasks",
-    name: "Tasks",
+    path: "/products",
+    name: "products",
     rtlName: "",
     icon: "content_paste",
     component: TableList,

@@ -14,7 +14,7 @@ import Send from "@material-ui/icons/Send";
 
 import Add from "./add";
 import Basic from "./createtask";
-
+import ProductTable from "./productList";
 import TasksTable from "./tasksTable";
 import Button from "components/CustomButtons/Button";
 const Tasks = gql`
@@ -32,6 +32,16 @@ const Tasks = gql`
     }
   }
 `;
+const Products = gql`
+  {
+    products {
+      id
+      name
+      price
+      published
+    }
+  }
+`;
 
 const JsonTolist = arg => {
   return Object.values(arg.userBags).map(bag => [
@@ -42,16 +52,26 @@ const JsonTolist = arg => {
     bag.updatedAt.replace("T", " ")
   ]);
 };
+const JsonTolistp = arg => {
+  return Object.values(arg.products).map(product => [
+    product.id,
+    product.name,
+    product.price,
+    product.published
+  ]);
+};
 export default function TableList() {
   useEffect(() => {
     localStorage.clear();
   }, []);
   const { loading, error, data } = useQuery(Tasks);
+  const { loading: loadingp, data: datap } = useQuery(Products);
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
   let tasks = JsonTolist(data);
   //localStorage.setItem("taskContent", "");
-  console.log(tasks);
+  let products = JsonTolistp(datap);
+  console.log(products);
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
@@ -89,6 +109,7 @@ export default function TableList() {
       </GridItem>
 
       <TasksTable data={tasks} />
+      <ProductTable data={products} />
     </GridContainer>
   );
 }
