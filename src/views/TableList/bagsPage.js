@@ -11,7 +11,25 @@ import TasksTable from "./tasksTable";
 
 const Tasks = gql`
   {
-    userBags(where: { published: true }, orderBy: updatedAt_DESC) {
+    d1: userBags(
+      where: { published: true, confirmed: false }
+      orderBy: updatedAt_DESC
+    ) {
+      id
+      confirmed
+      user {
+        phone
+        name
+      }
+      updatedAt
+      userProducts {
+        id
+      }
+    }
+    d2: userBags(
+      where: { published: true, confirmed: true }
+      orderBy: updatedAt_DESC
+    ) {
       id
       confirmed
       user {
@@ -27,7 +45,7 @@ const Tasks = gql`
 `;
 
 const JsonTolist = arg => {
-  return Object.values(arg.userBags).map(bag => [
+  let t1 = Object.values(arg.d1).map(bag => [
     bag.id,
     bag.user.name,
     bag.user.phone,
@@ -35,6 +53,15 @@ const JsonTolist = arg => {
     bag.updatedAt.replace("T", " ").replace("Z", " "),
     bag.confirmed.toString()
   ]);
+  let t2 = Object.values(arg.d2).map(bag => [
+    bag.id,
+    bag.user.name,
+    bag.user.phone,
+    bag.userProducts.length.toString(),
+    bag.updatedAt.replace("T", " ").replace("Z", " "),
+    bag.confirmed.toString()
+  ]);
+  return [...t1, ...t2];
 };
 
 export default function BagsPage() {
