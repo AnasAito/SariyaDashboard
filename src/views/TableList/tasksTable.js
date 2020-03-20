@@ -45,20 +45,26 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
-import { makeStyles } from "@material-ui/core/styles";
+
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
-import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-
+import { Mutation } from "@apollo/react-components";
 import get from "lodash/get";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
 });
+const Confirm = gql`
+  mutation updateProduct($id: ID!) {
+    updateUserBag(where: { id: $id }, data: { confirmed: true }) {
+      id
+    }
+  }
+`;
 const styles = theme => ({
   root: {
     width: "100%"
@@ -137,6 +143,7 @@ class TasksTable extends React.Component {
           userName: prop[1],
           products: parseInt(prop[3]),
           time: prop[4],
+          confirmed: prop[5],
           actions: (
             // we've added some custom button actions
             <div className="actions-right">
@@ -180,7 +187,7 @@ class TasksTable extends React.Component {
                 <CardIcon color="primary">
                   <Assignment />
                 </CardIcon>
-                <h4 className={classes.cardIconTitle}>TASKS TABLE</h4>
+                <h4 className={classes.cardIconTitle}>Bags table</h4>
               </CardHeader>
               <CardBody>
                 <ReactTable
@@ -204,6 +211,10 @@ class TasksTable extends React.Component {
                       accessor: "time"
                     },
                     {
+                      Header: "Confirmed",
+                      accessor: "confirmed"
+                    },
+                    {
                       Header: "Actions",
                       accessor: "actions",
                       sortable: false,
@@ -221,7 +232,7 @@ class TasksTable extends React.Component {
         </GridContainer>
         <Query
           query={UserBag}
-          fetchPolicy={"cache-and-network"}
+          //fetchPolicy={"network-only"}
           variables={{ id: this.state.id }}
         >
           {({ loading, error, data }) => {
@@ -330,7 +341,7 @@ class TasksTable extends React.Component {
                           location :{" "}
                           {get(data, "userBag.location", false) ? (
                             <a
-                              href={`https://www.google.com/maps/@${data.userBag.location.lat},${data.userBag.location.long}`}
+                              href={`https://www.google.com/maps/search/?api=1&query=${data.userBag.location.lat},${data.userBag.location.long}`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
@@ -385,9 +396,28 @@ class TasksTable extends React.Component {
                       </ExpansionPanelDetails>
                     </ExpansionPanel>
                   </DialogContent>
-                  <DialogActions
-                    className={classes.modalFooter}
-                  ></DialogActions>
+                  <DialogActions className={classes.modalFooter}>
+                    {
+                      <Mutation mutation={Confirm}>
+                        {(mutation, { data }) => (
+                          <Button
+                            color="primary"
+                            onClick={async () => {
+                              await mutation({
+                                variables: { id: this.state.id }
+                              });
+                              this.setState({ visible: false });
+                              this.props.refetch({
+                                variables: { id: this.state.id }
+                              });
+                            }}
+                          >
+                            Confirm
+                          </Button>
+                        )}
+                      </Mutation>
+                    }
+                  </DialogActions>
                 </Dialog>
               </>
             );

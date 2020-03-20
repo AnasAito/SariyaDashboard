@@ -134,7 +134,7 @@ class ProductTable extends React.Component {
                 <CardIcon color="primary">
                   <Assignment />
                 </CardIcon>
-                <h4 className={classes.cardIconTitle}>TASKS TABLE</h4>
+                <h4 className={classes.cardIconTitle}>Products table</h4>
               </CardHeader>
               <CardBody>
                 <ReactTable
