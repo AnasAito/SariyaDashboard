@@ -198,19 +198,7 @@ class Dashboard extends React.Component {
             </div>
           )}
           {this.getRoute() ? <Footer fluid /> : null}
-          <FixedPlugin
-            handleImageClick={this.handleImageClick}
-            handleColorClick={this.handleColorClick}
-            handleBgColorClick={this.handleBgColorClick}
-            handleHasImage={this.handleHasImage}
-            color={this.state["color"]}
-            bgColor={this.state["bgColor"]}
-            bgImage={this.state["image"]}
-            handleFixedClick={this.handleFixedClick}
-            fixedClasses={this.state.fixedClasses}
-            sidebarMinimize={this.sidebarMinimize.bind(this)}
-            miniActive={this.state.miniActive}
-          />
+          
         </div>
       </div>
     );
