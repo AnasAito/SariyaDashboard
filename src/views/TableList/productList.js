@@ -38,9 +38,18 @@ import Button from "components/CustomButtons/Button.jsx";
 import { cardTitle } from "assets/jss/material-dashboard-pro-react.jsx";
 import PublishIcon from "@material-ui/icons/Publish";
 import Snackbar from "components/Snackbar/Snackbar";
+import EditIcon from "@material-ui/icons/Edit";
 import Done from "@material-ui/icons/Done";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Mutation } from "@apollo/react-components";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
+import Slide from "@material-ui/core/Slide";
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="down" ref={ref} {...props} />;
+});
 const styles = {
   cardIconTitle: {
     ...cardTitle,
@@ -67,7 +76,8 @@ class ProductTable extends React.Component {
     super(props);
     this.state = {
       data: [],
-      visible: false
+      visible: false,
+      dialog: false
     };
   }
 
@@ -83,6 +93,18 @@ class ProductTable extends React.Component {
             // we've added some custom button actions
             <div className="actions-right">
               {/* use this button to add a like kind of action */}
+
+              <Button
+                justIcon
+                round
+                simple
+                color="info"
+                className="like"
+                onClick={() => this.setState({ dialog: true })}
+              >
+                <EditIcon />
+              </Button>
+
               <Mutation mutation={Publish}>
                 {(mutation, { data }) => (
                   <Button
@@ -170,6 +192,33 @@ class ProductTable extends React.Component {
             </Card>
           </GridItem>
         </GridContainer>
+        <Dialog
+          open={this.state.dialog}
+          TransitionComponent={Transition}
+          keepMounted
+          onClose={() => this.setState({ dialog: false })}
+          aria-labelledby="classic-modal-slide-title"
+          aria-describedby="classic-modal-slide-description"
+          contentStyle={{ width: "100%", maxWidth: "none" }}
+        >
+          <DialogTitle
+            id="classic-modal-slide-title"
+            disableTypography
+            className={classes.modalHeader}
+          ></DialogTitle>
+          <DialogContent
+            id="classic-modal-slide-description"
+            className={classes.modalBody}
+          ></DialogContent>
+          <DialogActions className={classes.modalFooter}>
+            <Button
+              color="primary"
+              onClick={() => this.setState({ dialog: false })}
+            >
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
         <Snackbar
           place="tc"
           color={"success"}
