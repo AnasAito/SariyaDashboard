@@ -6,17 +6,15 @@ import FileUploader from "react-firebase-file-uploader";
 import * as firebase from "firebase";
 import { gql } from "apollo-boost";
 import { Mutation } from "@apollo/react-components";
-const config = {
-  apiKey: "AIzaSyDMRMww-cvchgUNHXy0LIRW7a2wghh4nL0",
-  authDomain: "application-upload.firebaseapp.com",
-  databaseURL: "https://application-upload.firebaseio.com",
-  projectId: "application-upload",
-  storageBucket: "application-upload.appspot.com",
-  messagingSenderId: "887334092273",
-  appId: "1:887334092273:web:a3b55e2469ff5092749850",
-  measurementId: "G-DDPFK2MH90"
+var config = {
+  apiKey: "AIzaSyBPo2Est2rxzFPJ9ve1BY-_uCyDgU4k1-4",
+  authDomain: "saira-68617.firebaseapp.com",
+  databaseURL: "https://saira-68617.firebaseio.com",
+  projectId: "saira-68617",
+  storageBucket: "saira-68617.appspot.com",
+  messagingSenderId: "1023913934900",
+  appId: "1:1023913934900:web:9d0da50945a8a7286b8a61"
 };
-
 firebase.initializeApp(config);
 
 const ADD_Images = gql`
