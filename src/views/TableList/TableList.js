@@ -33,7 +33,7 @@ export default function TableList() {
     localStorage.clear();
   }, []);
 
-  const { loading, error, data } = useQuery(Products);
+  const { loading, error, data, refetch } = useQuery(Products);
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
 
@@ -42,7 +42,7 @@ export default function TableList() {
 
   return (
     <GridContainer>
-      <ProductTable data={products} />
+      <ProductTable data={products} refetch={refetch} />
     </GridContainer>
   );
 }

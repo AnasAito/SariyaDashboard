@@ -187,7 +187,7 @@ class TasksTable extends React.Component {
                 <CardIcon color="primary">
                   <Assignment />
                 </CardIcon>
-                <h4 className={classes.cardIconTitle}>Bags table</h4>
+                <h4 className={classes.cardIconTitle}>{this.props.name}</h4>
               </CardHeader>
               <CardBody>
                 <ReactTable

@@ -18,7 +18,7 @@ import React from "react";
 import PropTypes from "prop-types";
 // react component for creating dynamic tables
 import ReactTable from "react-table";
-
+import Close from "@material-ui/icons/Close";
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 // @material-ui/icons
@@ -47,6 +47,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import Slide from "@material-ui/core/Slide";
+import Modify from "./modify";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
 });
@@ -77,7 +78,8 @@ class ProductTable extends React.Component {
     this.state = {
       data: [],
       visible: false,
-      dialog: false
+      dialog: false,
+      id: ""
     };
   }
 
@@ -100,7 +102,7 @@ class ProductTable extends React.Component {
                 simple
                 color="info"
                 className="like"
-                onClick={() => this.setState({ dialog: true })}
+                onClick={() => this.setState({ dialog: true, id: prop[0] })}
               >
                 <EditIcon />
               </Button>
@@ -205,19 +207,24 @@ class ProductTable extends React.Component {
             id="classic-modal-slide-title"
             disableTypography
             className={classes.modalHeader}
-          ></DialogTitle>
+          >
+            <Button
+              justIcon
+              className={classes.modalCloseButton}
+              key="close"
+              aria-label="Close"
+              color="transparent"
+              onClick={() => this.setState({ dialog: false })}
+            >
+              <Close className={classes.modalClose} />
+            </Button>
+          </DialogTitle>
           <DialogContent
             id="classic-modal-slide-description"
             className={classes.modalBody}
-          ></DialogContent>
-          <DialogActions className={classes.modalFooter}>
-            <Button
-              color="primary"
-              onClick={() => this.setState({ dialog: false })}
-            >
-              Close
-            </Button>
-          </DialogActions>
+          >
+            <Modify id={this.state.id} refetch={this.props.refetch} />
+          </DialogContent>
         </Dialog>
         <Snackbar
           place="tc"
